@@ -1,0 +1,5 @@
+private_subnet_name = "default"
+rg_name = "terraformadmin"
+virtual_network_name = "terraformadmin-vnet"
+prefix = "ci1-aztestvm"
+adminpassword = "password!1213"
