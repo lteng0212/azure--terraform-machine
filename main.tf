@@ -10,7 +10,7 @@ data "azurerm_subnet" "internal" {
 
 resource "azurerm_network_interface" "main" {
   name                = "${var.prefix}-nic"
-  location            = data.zurerm_resource_group.rg.location
+  location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 
   ip_configuration {
