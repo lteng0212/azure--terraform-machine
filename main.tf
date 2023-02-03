@@ -48,7 +48,7 @@ resource "azurerm_virtual_machine" "main" {
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
-    disk_size_gb      = 10
+    disk_size_gb      = 30
   }
 
   os_profile {
@@ -66,16 +66,16 @@ resource "azurerm_virtual_machine" "main" {
     caching           = "ReadWrite"
     create_option     = "Empty"
     managed_disk_type = "Standard_LRS"
-    disk_size_gb      = 10
+    disk_size_gb      = 30
     lun = 1
   }
 
-    storage_data_disk {
+  storage_data_disk {
     name              = "${var.prefix}-data-disk-2"
     caching           = "ReadWrite"
     create_option     = "Empty"
     managed_disk_type = "Standard_LRS"
-    disk_size_gb      = 10
+    disk_size_gb      = 30
     lun = 2
   }
 
