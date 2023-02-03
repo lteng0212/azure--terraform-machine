@@ -1,0 +1,32 @@
+
+#!/bin/bash 
+
+# based on https://tfswitch.warrensbox.com/Continuous-Integration/
+
+echo "Installing tfswitch locally"
+
+# Get the installer on to your machine
+wget -N -c https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh
+
+# Make installer executable
+chmod 755 install.sh
+
+# Install tfswitch in a location you have permission
+./install.sh -b $(pwd)/.bin
+
+# set custom bin path
+CUSTOMBIN=$(pwd)/.bin
+
+#Add custom bin path to PATH environment
+export PATH=$CUSTOMBIN:$PATH
+
+$CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform
+
+echo "terraform init $TF_SPACE .."
+terraform init -backend-config="./conf/$TF_SPACE.conf"
+
+#cho "terraform destroy $TF_SPACE .."
+terraform destroy -auto-approve -no-color -var-file="./var/$TF_SPACE.tfvars"
+
+#echo "terraform apply $TF_SPACE .."
+#terraform apply -auto-approve -no-color -var-file="./var/$TF_SPACE.tfvars"
