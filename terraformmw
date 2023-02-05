@@ -26,7 +26,7 @@ echo "terraform init $TF_SPACE .."
 terraform init -backend-config="./conf/$TF_SPACE.conf"
 
 #cho "terraform destroy $TF_SPACE .."
-terraform destroy -auto-approve -no-color -var-file="./var/$TF_SPACE.tfvars"
+#terraform destroy -auto-approve -no-color -var-file="./var/$TF_SPACE.tfvars"
 
 #echo "terraform apply $TF_SPACE .."
-#terraform apply -auto-approve -no-color -var-file="./var/$TF_SPACE.tfvars"
+terraform apply -auto-approve -no-color -var-file="./var/$TF_SPACE.tfvars"
