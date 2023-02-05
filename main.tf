@@ -36,4 +36,6 @@ module "ubuntuservers" {
   vm_os_sku = "16.04-LTS"
   vm_os_publisher = "Canonical"
   vm_os_offer  = "UbuntuServer"
+  //ssh
+  enable_ssh_key = false
 }
