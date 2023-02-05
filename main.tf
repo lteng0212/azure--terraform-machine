@@ -8,78 +8,32 @@ data "azurerm_subnet" "internal" {
   resource_group_name  = data.azurerm_resource_group.rg.name
 }
 
-resource "azurerm_network_interface" "main" {
-  name                = "${var.prefix}-nic"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-
-  ip_configuration {
-    name                          = "${var.prefix}-main-ip"
-    subnet_id                     = data.azurerm_subnet.internal.id
-    private_ip_address_allocation = "Dynamic"
-    primary = true
-  }
-
-   ip_configuration {
-    name                          = "${var.prefix}-seconnd-ip"
-    subnet_id                     = data.azurerm_subnet.internal.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-resource "azurerm_virtual_machine" "main" {
-  name                  = "${var.prefix}-vm"
-  location              = data.azurerm_resource_group.rg.location
-  resource_group_name   = data.azurerm_resource_group.rg.name
-  network_interface_ids = [azurerm_network_interface.main.id]
-  vm_size               = var.vm_size
-  delete_os_disk_on_termination = true
+//1.可以批量创建；
+//2.无需制定网卡
+//3.磁盘参数不能完全设置、不能绑辅助IP
+//4.as与vm的name想绑定 
+module "ubuntuservers" {
+  source                           = "Azure/compute/azurerm"
+  resource_group_name              = data.azurerm_resource_group.rg.name
+  vm_hostname                      = "${var.prefix}-vm"
+  location                         = data.azurerm_resource_group.rg.location
+  vm_size                          = var.vm_size
   delete_data_disks_on_termination = true
-
-  storage_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
-    version   = "latest"
-  }
-
-  storage_os_disk {
-    name              = "${var.prefix}-os-disk"
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
-    disk_size_gb      = 30
-  }
-
-  os_profile {
-    computer_name  = "${var.prefix}-vm"
-    admin_username = "ansible"
-    admin_password = var.adminpassword
-  }
-
-  os_profile_linux_config {
-    disable_password_authentication = false
-  }
-
-  storage_data_disk {
-    name              = "${var.prefix}-data-disk-1"
-    caching           = "ReadWrite"
-    create_option     = "Empty"
-    managed_disk_type = "Standard_LRS"
-    disk_size_gb      = 30
-    lun = 1
-  }
-
-  storage_data_disk {
-    name              = "${var.prefix}-data-disk-2"
-    caching           = "ReadWrite"
-    create_option     = "Empty"
-    managed_disk_type = "Standard_LRS"
-    disk_size_gb      = 30
-    lun = 2
-  }
-
-  tags = {
-    environment = "testing"
-  }
+  delete_os_disk_on_termination    = true
+  admin_username                   = "ansible"
+  admin_password                   = var.adminpassword
+  vnet_subnet_id                   = data.azurerm_subnet.internal.id
+  //disk
+  storage_account_type = "Standard_LRS"
+  storage_os_disk_size_gb = 30
+  data_disk_size_gb = 30
+  data_sa_type = "Standard_LRS"
+  nb_data_disk = 2
+  //nb
+  nb_instances = 2 
+  //image
+  vm_os_version = "latest"
+  vm_os_sku = "16.04-LTS"
+  vm_os_publisher = "Canonical"
+  vm_os_offer  = "UbuntuServer"
 }
